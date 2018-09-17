@@ -5,7 +5,7 @@
 #define COUNTER_IN 26
 #define DERIVCOUNT 10
 
-#define PRINT_LOOP 250
+#define PRINT_LOOP 10
 #define SPEED_LOOP 100
 
 #define LED1_DATA 13
@@ -19,6 +19,7 @@ int printMillis = 0;
 int speedMillis = 0;
 int16_t rawCount = 0;
 int16_t lastCount = 0;
+int16_t lastSentCount = 0;
 int16_t loopCount = 0;
 int deltas[DERIVCOUNT] = {0};
 uint8_t deltai = 0;
@@ -96,7 +97,12 @@ void loop() {
     }
     if(loopMillis > printMillis + PRINT_LOOP) {
         printMillis = loopMillis;
-        Serial.printf("raw: %i Average: %i\n", rawCount, avg);
+        // Serial.printf("raw: %i Average: %i\n", rawCount, avg);
+        if(rawCount != lastSentCount) {
+            Serial.write(1);
+            Serial.write(rawCount % 256);
+            lastSentCount = rawCount;
+        }
         // display();
     }
     
